@@ -17,11 +17,19 @@ mkdir -p output/
 echo -e "${YELLOW}Compiling to WebAssembly...${NC}"
 cargo build --target wasm32-unknown-unknown --release
 
+WASM_FILE_NAME=$(grep '^name = ' Cargo.toml | cut -d '"' -f 2 | sed 's/[ -]/_/g')
+
 # check if the WASM file was created
-WASM_FILE="target/wasm32-unknown-unknown/release/klyx_extension_template.wasm"
+WASM_FILE="target/wasm32-unknown-unknown/release/${WASM_FILE_NAME}.wasm"
 if [ ! -f "$WASM_FILE" ]; then
     echo -e "${RED}Error: WASM file not found at $WASM_FILE${NC}"
     exit 1
+fi
+
+if command -v wasm2wat >/dev/null 2>&1; then
+    wasm2wat "$WASM_FILE" -o "$WASM_FILE_NAME.wat"
+else
+    echo "wasm2wat not found. Skipping .wat generation."
 fi
 
 # create temporary directory for packaging
@@ -53,4 +61,4 @@ echo -e "${GREEN}Build complete!${NC}"
 echo -e "${GREEN}Package created: output/$ZIP_NAME${NC}"
 echo -e "${GREEN}Contents:${NC}"
 echo -e "  - extension.toml"
-echo -e "  - src/klyx_extension_template.wasm"
+echo -e "  - src/${WASM_FILE_NAME}.wasm"
