@@ -7,4 +7,4 @@ edition = "2024"
 crate-type = ["cdylib"] # Required for wasm
 
 [dependencies]
-klyx_extension_api = "1.1.0" # use latest version
+klyx_extension_api = "1.2.0" # use latest version

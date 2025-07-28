@@ -15,21 +15,37 @@ rm -rf output/
 mkdir -p output/
 
 echo -e "${YELLOW}Compiling to WebAssembly...${NC}"
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32-wasip1 --release
 
 WASM_FILE_NAME=$(grep '^name = ' Cargo.toml | cut -d '"' -f 2 | sed 's/[ -]/_/g')
 
 # check if the WASM file was created
-WASM_FILE="target/wasm32-unknown-unknown/release/${WASM_FILE_NAME}.wasm"
+WASM_FILE="target/wasm32-wasip1/release/${WASM_FILE_NAME}.wasm"
 if [ ! -f "$WASM_FILE" ]; then
     echo -e "${RED}Error: WASM file not found at $WASM_FILE${NC}"
     exit 1
 fi
 
 if command -v wasm2wat >/dev/null 2>&1; then
-    wasm2wat "$WASM_FILE" -o "$WASM_FILE_NAME.wat"
+    if wasm2wat "$WASM_FILE" -o "$WASM_FILE_NAME.wat" 2>/dev/null; then
+        echo "Generated WAT using wasm2wat."
+    else
+        echo "wasm2wat failed. Trying wasm-tools..."
+        if command -v wasm-tools >/dev/null 2>&1; then
+            wasm-tools print "$WASM_FILE" > "$WASM_FILE_NAME.wat"
+            echo "Generated WAT using wasm-tools."
+        else
+            echo "wasm-tools not found. Cannot generate .wat"
+        fi
+    fi
 else
-    echo "wasm2wat not found. Skipping .wat generation."
+    echo "wasm2wat not found. Trying wasm-tools..."
+    if command -v wasm-tools >/dev/null 2>&1; then
+        wasm-tools print "$WASM_FILE" > "$WASM_FILE_NAME.wat"
+        echo "Generated WAT using wasm-tools."
+    else
+        echo "wasm-tools not found. Cannot generate .wat"
+    fi
 fi
 
 # create temporary directory for packaging

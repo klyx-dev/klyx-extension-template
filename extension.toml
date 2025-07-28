@@ -5,5 +5,3 @@ schema_version = 1
 authors = ["Your Name <you@example.com>"]
 description = "My cool extension"
 repository = "https://github.com/your-name/my-klyx-extension"
-# The size of requested memory for WebAssembly Environment (in MB)
-requested_memory_size = 1

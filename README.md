@@ -13,7 +13,7 @@ This template provides a starting point for building Klyx extensions. It include
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) (latest stable version)
-- `wasm32-unknown-unknown` target: `rustup target add wasm32-unknown-unknown`
+- `wasm32-wasip1` target: `rustup target add wasm32-wasip1`
 - `zip` command (usually pre-installed on Linux/macOS)
 
 ## Project Structure
@@ -59,9 +59,10 @@ use klyx_extension_api as klyx;
 pub struct YourExtension;
 
 impl klyx::Extension for YourExtension {
-    fn init() {
+    fn new() -> Self {
         // Your extension initialization code here
-        klyx::android::show_toast("Hello from YourExtension!");
+        klyx::show_toast("Hello from YourExtension.", klyx::ToastDuration::Long);
+        Self
     }
 }
 
@@ -99,11 +100,10 @@ The `extension.toml` file contains metadata about your extension:
 | `authors` | List of authors |
 | `description` | Brief description of functionality |
 | `repository` | Source code repository URL |
-| `requested_memory_size` | Memory allocation for WASM environment (MB) |
 
 ## API Reference
 
-This template uses the `klyx_extension_api` crate. Check the [official repository](https://github.com/klyx-dev/klyx_extension_api) for the latest API reference.
+This template uses the `klyx_extension_api` crate. Check the [official repository](https://github.com/klyx-dev/klyx-extension-api) for the latest API reference.
 
 ## Troubleshooting
 
@@ -111,7 +111,7 @@ This template uses the `klyx_extension_api` crate. Check the [official repositor
 
 **Build fails with "target not found"**
 ```bash
-rustup target add wasm32-unknown-unknown
+rustup target add wasm32-wasip1
 ```
 
 **Permission denied on build.sh**
@@ -128,12 +128,12 @@ chmod +x build.sh
 
 To debug WASM compilation issues:
 ```bash
-cargo build --target wasm32-unknown-unknown --release --verbose
+cargo build --target wasm32-wasip1 --release --verbose
 ```
 
 To inspect the generated WASM:
 ```bash
-wasm-objdump -x target/wasm32-unknown-unknown/release/your_extension.wasm
+wasm-objdump -x target/wasm32-wasip1/release/your_extension.wasm
 ```
 
 ## Contributing
